@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shaheer Ahmed — DevOps Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #0c0d0f;
+        --surface: #13151a;
+        --border: #1f2229;
+        --accent: #00e5a0;
+        --accent2: #0066ff;
+        --text: #e8eaf0;
+        --muted: #5a5f72;
+        --serif: "DM Serif Display", Georgia, serif;
+        --mono: "DM Mono", monospace;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--mono);
+      }
+
+      /* ── noise grain overlay ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+      }
+
+      /* ── accent blob ── */
+      body::after {
+        content: "";
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        top: -200px;
+        left: -150px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 160, 0.07) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── layout ── */
+      .wrapper {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        min-height: 100vh;
+      }
+
+      /* ── divider ── */
+      .divider {
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--accent) 30%,
+          var(--border) 70%,
+          transparent
+        );
+      }
+
+      /* ── LEFT PANEL ── */
+      .left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 60px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 40px;
+        opacity: 0;
+        animation: fadeUp 0.6s ease forwards 0.1s;
+      }
+
+      .status-badge::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.8);
+        }
+      }
+
+      .name {
+        font-family: var(--serif);
+        font-size: clamp(40px, 5vw, 68px);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        opacity: 0;
+        animation: fadeUp 0.7s ease forwards 0.25s;
+      }
+
+      .name em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .role-line {
+        margin-top: 24px;
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        opacity: 0;
+        animation: fadeUp 0.7s ease forwards 0.4s;
+      }
+
+      .tech-stack {
+        margin-top: 48px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        opacity: 0;
+        animation: fadeUp 0.7s ease forwards 0.55s;
+      }
+
+      .tag {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        color: var(--muted);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .tag:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .left-footer {
+        margin-top: auto;
+        padding-top: 48px;
+        font-size: 11px;
+        color: var(--muted);
+        opacity: 0;
+        animation: fadeUp 0.7s ease forwards 0.7s;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .social-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        transition:
+          color 0.3s,
+          border-color 0.3s;
+      }
+
+      .social-link:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .social-link svg {
+        width: 13px;
+        height: 13px;
+        fill: currentColor;
+        flex-shrink: 0;
+      }
+
+      /* ── RIGHT PANEL ── */
+      .right {
+        padding: 80px 60px;
+        display: flex;
+        flex-direction: column;
+        gap: 48px;
+        overflow-y: auto;
+      }
+
+      /* ── SECTION CARD ── */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 36px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.7s ease forwards;
+        transition: border-color 0.3s;
+      }
+
+      .card:hover {
+        border-color: rgba(0, 229, 160, 0.25);
+      }
+
+      .card:nth-child(1) {
+        animation-delay: 0.3s;
+      }
+      .card:nth-child(2) {
+        animation-delay: 0.45s;
+      }
+
+      .card-label {
+        font-size: 10px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .card-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .card h2 {
+        font-family: var(--serif);
+        font-size: 26px;
+        font-weight: 400;
+        color: var(--text);
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+
+      .card p {
+        font-size: 13px;
+        line-height: 1.85;
+        color: #8a8fa8;
+        margin-bottom: 16px;
+      }
+
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .highlight {
+        color: var(--accent);
+      }
+      .highlight2 {
+        color: var(--accent2);
+      }
+
+      /* ── stat row ── */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        margin-top: 28px;
+        border: 1px solid var(--border);
+      }
+
+      .stat {
+        background: var(--surface);
+        padding: 20px 16px;
+        text-align: center;
+      }
+
+      .stat-num {
+        font-family: var(--serif);
+        font-size: 28px;
+        color: var(--text);
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+        display: block;
+      }
+
+      /* ── project grid ── */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 4px;
+      }
+
+      .project-item {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 22px;
+        text-decoration: none;
+        display: block;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+
+      .project-item:hover {
+        border-color: var(--accent);
+        transform: translateY(-3px);
+      }
+
+      .project-item:hover .project-arrow {
+        opacity: 1;
+        transform: translate(2px, -2px);
+      }
+
+      .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .project-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        font-family: var(--mono);
+      }
+
+      .project-arrow {
+        font-size: 14px;
+        color: var(--accent);
+        opacity: 0;
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
+      }
+
+      .project-desc {
+        font-size: 11.5px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+
+      .project-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .project-tag {
+        font-size: 9.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 2px;
+        background: rgba(0, 229, 160, 0.07);
+        color: var(--accent);
+        border: 1px solid rgba(0, 229, 160, 0.15);
+      }
+
+      /* ── animations ── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── responsive ── */
+      @media (max-width: 900px) {
+        .wrapper {
+          grid-template-columns: 1fr;
+        }
+        .divider {
+          display: none;
+        }
+        .left {
+          position: static;
+          height: auto;
+          padding: 60px 32px 40px;
+        }
+        .right {
+          padding: 0 32px 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- ══ LEFT ══ -->
+      <aside class="left">
+        <span class="status-badge">Available for work</span>
+
+        <h1 class="name">Shaheer<br /><em>Ahmed</em></h1>
+        <p class="role-line">DevOps &amp; Cloud Infrastructure Engineer</p>
+
+        <div class="tech-stack">
+          <span class="tag">Kubernetes</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Terraform</span>
+          <span class="tag">AWS</span>
+          <span class="tag">Jenkins (CI/CD)</span>
+          <span class="tag">Ansible</span>
+          <span class="tag">Linux</span>
+          <span class="tag">Github/Git</span>
+          <span class="tag">Grafana</span>
+          <span class="tag">Loki</span>
+          <span class="tag">Prometheus</span>
+          <span class="tag">Jira</span>
+          <span class="tag">SonarQube</span>
+          <span class="tag">Helm</span>
+          <span class="tag">ArgoCD</span>
+          <span class="tag">YAML</span>
+          <span class="tag">Shell Scripting</span>
+        </div>
+
+        <div class="left-footer">
+          <p>shaheer.ahmed · London, UK</p>
+          <div class="social-links">
+            <a
+              class="social-link"
+              href="https://www.linkedin.com/in/ahmshaheer/"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                />
+              </svg>
+              LinkedIn
+            </a>
+            <a
+              class="social-link"
+              href="https://github.com/ahmshaheer"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                />
+              </svg>
+              GitHub
+            </a>
+            <a
+              class="social-link"
+              href="https://mail.google.com/mail/?view=cm&to=ahmshaheerrr@gmail.com"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.910 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"
+                />
+              </svg>
+              Email
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="divider"></div>
+
+      <!-- ══ RIGHT ══ -->
+      <main class="right">
+        <!-- Card 1 — About -->
+        <div class="card">
+          <div class="card-label">About me</div>
+          <h2>Building the pipes that power modern software.</h2>
+          <p>
+            I'm a <span class="highlight">DevOps Engineer</span> with a passion
+            for building resilient, scalable infrastructure and automating
+            everything that shouldn't need a human touch. I thrive at the
+            intersection of development and operations shortening feedback
+            loops, eliminating toil, and letting engineering teams ship with
+            confidence.
+          </p>
+          <p>
+            My work spans the full delivery lifecycle: from designing
+            <span class="highlight2">cloud-native architectures</span> on AWS,
+            to crafting CI/CD pipelines that deploy dozens of times a day
+            without a single sleepless night. I treat infrastructure as code,
+            reliability as a feature, and documentation as a first-class
+            citizen.
+          </p>
+          <p>
+            When I'm not knee-deep in
+            <span class="highlight">Kubernetes manifests</span> or debugging a
+            flaky pipeline, I'm contributing to open-source tooling and writing
+            about the patterns I've learned the hard way.
+          </p>
+
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-num">1+</span>
+              <span class="stat-label">Years experience</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">3+</span>
+              <span class="stat-label">Projects shipped</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">99.9%</span>
+              <span class="stat-label">Uptime SLA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 — Projects -->
+        <div class="card">
+          <div class="card-label">Projects</div>
+          <h2>Things I've built &amp; shipped.</h2>
+
+          <div class="projects-grid">
+            <a
+              class="project-item"
+              href="https://github.com/ahmshaheer/Two-Tier-Web-App-with-Docker-and-Jenkins"
+              target="_blank"
+              rel="noopener"
+            >
+              <div class="project-header">
+                <span class="project-name"
+                  >Two Tier Web App with Docker &amp; Jenkins</span
+                >
+                <span class="project-arrow">↗</span>
+              </div>
+              <p class="project-desc">
+                Containerised a two-tier web application using Docker, with a
+                Jenkins CI/CD pipeline automating build, test, and deployment
+                stages on every push.
+              </p>
+              <div class="project-tags">
+                <span class="project-tag">Docker</span>
+                <span class="project-tag">Jenkins</span>
+                <span class="project-tag">CI/CD</span>
+              </div>
+            </a>
+
+            <a
+              class="project-item"
+              href="https://github.com/ahmshaheer"
+              target="_blank"
+              rel="noopener"
+            >
+              <div class="project-header">
+                <span class="project-name"
+                  >Three Tier Web App with Kubernetes</span
+                >
+                <span class="project-arrow">↗</span>
+              </div>
+              <p class="project-desc">
+                Deployed a full three-tier architecture (frontend, backend,
+                database) on Kubernetes with separate namespaces, services, and
+                persistent volume claims per layer.
+              </p>
+              <div class="project-tags">
+                <span class="project-tag">Kubernetes</span>
+                <span class="project-tag">Docker</span>
+                <span class="project-tag">Helm</span>
+              </div>
+            </a>
+
+            <a
+              class="project-item"
+              href="https://github.com/ahmshaheer"
+              target="_blank"
+              rel="noopener"
+            >
+              <div class="project-header">
+                <span class="project-name"
+                  >Cloud Infrastructure with Terraform</span
+                >
+                <span class="project-arrow">↗</span>
+              </div>
+              <p class="project-desc">
+                Provisioned a fully automated cloud infrastructure on AWS using
+                Terraform — including VPC, subnets, EC2, RDS, and IAM roles —
+                with remote state management via S3.
+              </p>
+              <div class="project-tags">
+                <span class="project-tag">Terraform</span>
+                <span class="project-tag">AWS</span>
+                <span class="project-tag">IaC</span>
+              </div>
+            </a>
+
+            <a
+              class="project-item"
+              href="https://github.com/ahmshaheer"
+              target="_blank"
+              rel="noopener"
+            >
+              <div class="project-header">
+                <span class="project-name">Prometheus Observability Stack</span>
+                <span class="project-arrow">↗</span>
+              </div>
+              <p class="project-desc">
+                Deployed a production-grade observability stack with Prometheus
+                for metrics collection, Alertmanager for alerting, and Grafana
+                dashboards for real-time visibility.
+              </p>
+              <div class="project-tags">
+                <span class="project-tag">Prometheus</span>
+                <span class="project-tag">Grafana</span>
+                <span class="project-tag">Alertmanager</span>
+              </div>
+            </a>
+
+            <a
+              class="project-item"
+              href="https://github.com/ahmshaheer"
+              target="_blank"
+              rel="noopener"
+            >
+              <div class="project-header">
+                <span class="project-name">AI-Assisted DevOps</span>
+                <span class="project-arrow">↗</span>
+              </div>
+              <p class="project-desc">
+                Integrated AI tooling into the DevOps workflow — using LLMs to
+                auto-generate runbooks, analyse logs, suggest fixes for failed
+                pipelines, and draft incident reports.
+              </p>
+              <div class="project-tags">
+                <span class="project-tag">AI / LLMs</span>
+                <span class="project-tag">Python</span>
+                <span class="project-tag">Automation</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
